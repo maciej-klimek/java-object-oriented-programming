@@ -4,9 +4,9 @@ import java.io.FileReader;
 
 public class WordCounter {
 
-    private static boolean l = true;
-    private static boolean c = true;
-    private static boolean w = true;
+    private static boolean l = false;
+    private static boolean c = false;
+    private static boolean w = false;
 
     private static int lineCount = 0;
     private static int charCount = 0;
@@ -22,14 +22,14 @@ public class WordCounter {
         }
 
         try {
-            readCommandLineArgs(args);
+            readArguments(args);
         }
         catch(Exception e) {
-            System.out.println("Wystąpił błąd podczas czytania argumentów programu.");
+            System.out.println("Wystąpił błąd wczytywania argumentów.");
             System.exit(0);
         }
 
-        counter();
+        count();
 
         if(l) {
             System.out.println("wierszy: " + lineCount);
@@ -40,10 +40,9 @@ public class WordCounter {
         if(w) {
             System.out.println("słów: " + wordCount);
         }
-
     }
 
-    public static void counter() {
+    public static void count() {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
             String line;
             while((line = reader.readLine()) != null) {
@@ -69,30 +68,36 @@ public class WordCounter {
         }
     }
 
-    public static void readCommandLineArgs(String[] args) {
+    public static void readArguments(String[] args) {
 
         boolean fileFound = false;
 
-        for(String arg : args) {
-            if(arg.startsWith("-")) {
-                for(char option : arg.substring(1).toCharArray()) {
-                    if(option == 'l') l = false;
-                    else if(option == 'c') c = false;
-                    else if(option == 'w') w = false;
-                    else {
-                        System.out.println("Nieznana opcja: " + option);
-                        System.exit(0);
+        if(args.length == 1) {
+            l = w = c = true;
+            fileName = args[0];
+            fileFound = true;
+        } else {
+            for(String arg : args) {
+                if(arg.startsWith("-")) {
+                    for(char option : arg.substring(1).toCharArray()) {
+                        if(option == 'l') l = true;
+                        else if(option == 'c') c = true;
+                        else if(option == 'w') w = true;
+                        else {
+                            System.out.println("Nieznana opcja: " + option);
+                            System.exit(0);
+                        }
                     }
                 }
-            }
-            else {
-                fileName = arg;
-                fileFound = true;
+                else {
+                    fileName = arg;
+                    fileFound = true;
+                }
             }
         }
 
         if(!fileFound) {
-            System.out.println("Brak nazwy pliku.");
+            System.out.println("Nie podano nazwy pliku.");
             System.exit(0);
         }
     }
