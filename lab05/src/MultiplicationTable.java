@@ -1,67 +1,55 @@
 import java.io.*;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 public class MultiplicationTable {
-
-    public static void createSettingsFile(String filePath) {
-        try {
-            // Create a FileWriter object
-            FileWriter writer = new FileWriter(filePath);
-
-            writer.write("min_val: 1" + "\n" +
-                    "max_val: 10" + "\n" +
-                    "min_rep: 10" + "\n" +
-                    "max_rep: 25" + "\n" +
-                    "percent_to_pass: 75" + "\n");
-
-            writer.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Map<String, Integer> readSettingsFile(String filePath) {
-        Map<String, Integer> settingsMap = new HashMap<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(":");
-                if (parts.length == 2) {
-                    String key = parts[0].trim();
-                    int value = Integer.parseInt(parts[1].trim());
-                    settingsMap.put(key, value);
-                }
-            }
-        } catch (IOException | NumberFormatException e) {
-            e.printStackTrace();
-        }
-
-        return settingsMap;
-    }
-
-    public static void play(Map<String, Integer> config) {
-        int minVal = config.get("min_val");
-        int maxVal = config.get("max_val");
-        int minRep = config.get("min_rep");
-        int maxRep = config.get("max_rep");
-        int percentToPass = config.get("percent_to_pass");
-
-    }
     public static void main(String[] args) {
 
-        String filePath = "settings.txt";
-        File file = new File(filePath);
-        boolean fileExists = file.exists();
+        String fileName = "settings.properties";
+        Properties properties = new Properties();
+        HashMap<String, Integer> settings = new HashMap<String, Integer>();
 
-        if (!fileExists) {
-            System.out.println("File does not exists.");
-            createSettingsFile(filePath);
+        getSettingsData(fileName, properties);
+        loadSettings(settings, properties);
+
+        System.out.println(settings);
+    }
+
+    private static void getSettingsData(String fileName, Properties properties) {
+        try {
+            File file = new File(fileName);
+
+            if (!file.exists()) {
+                properties.setProperty("wartosc_minimum", "1");
+                properties.setProperty("wartosc_maksimum", "10");
+                properties.setProperty("powtorzen_maksimum", "10");
+                properties.setProperty("procent", "70");
+
+                try (OutputStream outputStream = new FileOutputStream(fileName)) {
+                    properties.store(outputStream, "Default Configuration");
+                    System.out.println("Stworzono plik ustawien");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try (InputStream inputStream = new FileInputStream(fileName)) {
+                    properties.load(inputStream);
+                    System.out.println("Zaladowano ustawienia");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Map<String, Integer> config = readSettingsFile(filePath);
-        play(config);
+    }
+
+    private static void loadSettings(HashMap<String, Integer> settings, Properties properties) {
+        
+        settings.put("min_val", Integer.valueOf(properties.getProperty("wartosc_minimum")));
+        settings.put("max_val", Integer.valueOf(properties.getProperty("wartosc_maksimum")));
+        settings.put("max_rep", Integer.valueOf(properties.getProperty("powtorzen_maksimum")));
+        settings.put("percent", Integer.valueOf(properties.getProperty("procent")));
 
     }
 }
