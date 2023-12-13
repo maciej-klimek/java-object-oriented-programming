@@ -54,7 +54,7 @@ public class MultiplicationTable {
     }
 
     private static void loadSettings(HashMap<String, Integer> settings, Properties properties) {
-        
+
         settings.put("min_val", Integer.valueOf(properties.getProperty("wartosc_minimum")));
         settings.put("max_val", Integer.valueOf(properties.getProperty("wartosc_maksimum")));
         settings.put("min_rep", Integer.valueOf(properties.getProperty("powtorzen_minimum")));
